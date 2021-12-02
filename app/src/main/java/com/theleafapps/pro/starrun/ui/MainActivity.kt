@@ -1,8 +1,9 @@
-package com.theleafapps.pro.starrun
+package com.theleafapps.pro.starrun.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import com.theleafapps.pro.starrun.R
 import com.theleafapps.pro.starrun.db.RunDAO
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
