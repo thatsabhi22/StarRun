@@ -25,7 +25,6 @@ class RunFragment : Fragment(R.layout.fragment_run), EasyPermissions.PermissionC
         super.onViewCreated(view, savedInstanceState)
         requestPermissions()
 
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         fab.setOnClickListener {
             findNavController().navigate(R.id.action_runFragment_to_trackingFragment)
         }
@@ -40,8 +39,8 @@ class RunFragment : Fragment(R.layout.fragment_run), EasyPermissions.PermissionC
                 this,
                 "You Need to accept the location permission to use this app",
                 REQUEST_CODE_LOCATION_PERMISSION,
-                android.Manifest.permission.ACCESS_FINE_LOCATION,
-                android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
             )
         } else {
             EasyPermissions.requestPermissions(
