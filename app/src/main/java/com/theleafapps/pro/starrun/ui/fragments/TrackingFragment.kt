@@ -12,6 +12,7 @@ import com.theleafapps.pro.starrun.services.TrackingService
 import com.theleafapps.pro.starrun.ui.viewmodels.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_tracking.*
+import timber.log.Timber
 
 @AndroidEntryPoint
 class TrackingFragment : Fragment(R.layout.fragment_tracking) {
@@ -36,6 +37,7 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
     private fun sendCommandToService(action: String) =
         Intent(requireContext(),TrackingService::class.java).also{
             it.action = action
+            requireContext().startService(it)
         }
 
     override fun onSaveInstanceState(outState: Bundle) {

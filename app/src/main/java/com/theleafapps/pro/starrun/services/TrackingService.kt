@@ -8,7 +8,6 @@ import com.theleafapps.pro.starrun.other.Constants.ACTION_STOP_SERVICE
 import timber.log.Timber
 
 class TrackingService : LifecycleService() {
-
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.let {
             when(it.action){
