@@ -36,6 +36,12 @@ class TrackingService : LifecycleService() {
         val pathPoints = MutableLiveData<PolyLines>()
     }
 
+    // Adding Empty list to Livedata initially
+    private fun postInitialValues(){
+        isTracking.postValue(false)
+        pathPoints.postValue(mutableListOf())
+    }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.let {
             when(it.action){
