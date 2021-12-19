@@ -11,6 +11,8 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
+import androidx.lifecycle.MutableLiveData
+import com.google.android.gms.maps.model.LatLng
 import com.theleafapps.pro.starrun.R
 import com.theleafapps.pro.starrun.other.Constants.ACTION_PAUSE_SERVICE
 import com.theleafapps.pro.starrun.other.Constants.ACTION_SHOW_TRACKING_FRAGMENT
@@ -22,9 +24,17 @@ import com.theleafapps.pro.starrun.other.Constants.NOTIFICATION_ID
 import com.theleafapps.pro.starrun.ui.MainActivity
 import timber.log.Timber
 
+typealias PolyLine =  MutableList<LatLng>
+typealias PolyLines =  MutableList<PolyLine>
+
 class TrackingService : LifecycleService() {
 
     var isFirstRun = true
+
+    companion object {
+        val isTracking = MutableLiveData<Boolean>()
+        val pathPoints = MutableLiveData<PolyLines>()
+    }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.let {
