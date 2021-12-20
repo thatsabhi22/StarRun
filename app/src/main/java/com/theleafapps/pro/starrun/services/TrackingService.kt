@@ -1,5 +1,6 @@
 package com.theleafapps.pro.starrun.services
 
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.NotificationManager.IMPORTANCE_LOW
@@ -10,10 +11,13 @@ import android.content.Intent
 import android.location.Location
 import com.google.android.gms.location.LocationRequest
 import android.os.Build
+import android.os.Looper
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
+import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
 import com.google.android.gms.location.LocationResult
@@ -39,6 +43,8 @@ class TrackingService : LifecycleService() {
 
     var isFirstRun = true
 
+    lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+
     companion object {
         val isTracking = MutableLiveData<Boolean>()
         val pathPoints = MutableLiveData<PolyLines>()
@@ -48,6 +54,15 @@ class TrackingService : LifecycleService() {
     private fun postInitialValues(){
         isTracking.postValue(false)
         pathPoints.postValue(mutableListOf())
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        postInitialValues()
+        fusedLocationProviderClient = FusedLocationProviderClient(this)
+        isTracking.observe(this, Observer {
+            updateLocationTracking(it)
+        })
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -72,6 +87,7 @@ class TrackingService : LifecycleService() {
         return super.onStartCommand(intent, flags, startId)
     }
 
+    @SuppressLint("MissingPermission")
     private fun updateLocationTracking(isTracking: Boolean){
         if(isTracking){
             if(TrackingUtility.hasLocationPermission(this)){
@@ -80,7 +96,14 @@ class TrackingService : LifecycleService() {
                     fastestInterval = FASTEST_LOCATION_INTERVAL
                     priority = PRIORITY_HIGH_ACCURACY
                 }
+                fusedLocationProviderClient.requestLocationUpdates(
+                    locationRequest,
+                    locationCallback,
+                    Looper.getMainLooper()
+                )
             }
+        } else {
+            fusedLocationProviderClient.removeLocationUpdates(locationCallback)
         }
     }
 
@@ -94,6 +117,7 @@ class TrackingService : LifecycleService() {
                 result?.locations?.let { locations ->
                     for(location in locations){
                         addPathPoint(location)
+                        Timber.d("New Location: ${location.latitude}, ${location.longitude}")
                     }
                 }
             }
@@ -121,6 +145,7 @@ class TrackingService : LifecycleService() {
     private fun startForegroundService(){
 
         addEmptyPolyLine()
+        isTracking.postValue(true)
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
