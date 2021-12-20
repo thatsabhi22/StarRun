@@ -8,12 +8,14 @@ import android.app.PendingIntent.FLAG_UPDATE_CURRENT
 import android.content.Context
 import android.content.Intent
 import android.location.Location
+import com.google.android.gms.location.LocationRequest
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.maps.model.LatLng
 import com.theleafapps.pro.starrun.R
@@ -21,9 +23,12 @@ import com.theleafapps.pro.starrun.other.Constants.ACTION_PAUSE_SERVICE
 import com.theleafapps.pro.starrun.other.Constants.ACTION_SHOW_TRACKING_FRAGMENT
 import com.theleafapps.pro.starrun.other.Constants.ACTION_START_OR_RESUME_SERVICE
 import com.theleafapps.pro.starrun.other.Constants.ACTION_STOP_SERVICE
+import com.theleafapps.pro.starrun.other.Constants.FASTEST_LOCATION_INTERVAL
+import com.theleafapps.pro.starrun.other.Constants.LOCATION_UPDATE_INTERVAL
 import com.theleafapps.pro.starrun.other.Constants.NOTIFICATION_CHANNEL_ID
 import com.theleafapps.pro.starrun.other.Constants.NOTIFICATION_CHANNEL_NAME
 import com.theleafapps.pro.starrun.other.Constants.NOTIFICATION_ID
+import com.theleafapps.pro.starrun.other.TrackingUtility
 import com.theleafapps.pro.starrun.ui.MainActivity
 import timber.log.Timber
 
@@ -65,6 +70,18 @@ class TrackingService : LifecycleService() {
             }
         }
         return super.onStartCommand(intent, flags, startId)
+    }
+
+    private fun updateLocationTracking(isTracking: Boolean){
+        if(isTracking){
+            if(TrackingUtility.hasLocationPermission(this)){
+                val locationRequest = LocationRequest().apply {
+                    interval = LOCATION_UPDATE_INTERVAL
+                    fastestInterval = FASTEST_LOCATION_INTERVAL
+                    priority = PRIORITY_HIGH_ACCURACY
+                }
+            }
+        }
     }
 
     // This callback is an event like As soon as location is recieved
