@@ -13,6 +13,8 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.MutableLiveData
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationResult
 import com.google.android.gms.maps.model.LatLng
 import com.theleafapps.pro.starrun.R
 import com.theleafapps.pro.starrun.other.Constants.ACTION_PAUSE_SERVICE
@@ -65,6 +67,24 @@ class TrackingService : LifecycleService() {
         return super.onStartCommand(intent, flags, startId)
     }
 
+    // This callback is an event like As soon as location is recieved
+    // addPathPoint() is called that posts the location value to the
+    // Pathpoint live data
+    val locationCallback = object : LocationCallback(){
+        override fun onLocationResult(result: LocationResult?) {
+            super.onLocationResult(result)
+            if(isTracking.value!!){
+                result?.locations?.let { locations ->
+                    for(location in locations){
+                        addPathPoint(location)
+                    }
+                }
+            }
+        }
+    }
+
+    // Posting Latlong values to the pathpoint livedata,
+    // so that it gets observed
     private fun addPathPoint(location: Location?){
         location?.let {
             val pos = LatLng(location.latitude, location.longitude)
