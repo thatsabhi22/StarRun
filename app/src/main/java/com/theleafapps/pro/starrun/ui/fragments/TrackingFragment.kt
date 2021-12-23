@@ -6,8 +6,12 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.model.PolylineOptions
 import com.theleafapps.pro.starrun.R
 import com.theleafapps.pro.starrun.other.Constants.ACTION_START_OR_RESUME_SERVICE
+import com.theleafapps.pro.starrun.other.Constants.POLYLINE_COLOR
+import com.theleafapps.pro.starrun.other.Constants.POLYLINE_WIDTH
+import com.theleafapps.pro.starrun.services.PolyLine
 import com.theleafapps.pro.starrun.services.TrackingService
 import com.theleafapps.pro.starrun.ui.viewmodels.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -18,6 +22,9 @@ import timber.log.Timber
 class TrackingFragment : Fragment(R.layout.fragment_tracking) {
 
     private val viewModel : MainViewModel by viewModels()
+
+    private var isTracking = false
+    private var pathPoints = mutableListOf<PolyLine>()
 
     private var map: GoogleMap? = null
 
@@ -31,6 +38,22 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
 
         mapView.getMapAsync {
             map = it
+        }
+    }
+
+    // Joining the Second last Coordinates with the last location Coordinates
+    // This function will only join the last and second last coordinates
+    // but won't join all the polylines, when we rotate the device
+    private fun addLatestPolyline(){
+        if(pathPoints.isNotEmpty() && pathPoints.last().size > 1){
+            val preLastLatLng = pathPoints.last()[pathPoints.last().size - 2]
+            val lastLatLng = pathPoints.last().last()
+            val polyLineOptions = PolylineOptions()
+                .color(POLYLINE_COLOR)
+                .width(POLYLINE_WIDTH)
+                .add(preLastLatLng)
+                .add(lastLatLng)
+            map?.addPolyline(polyLineOptions)
         }
     }
 
