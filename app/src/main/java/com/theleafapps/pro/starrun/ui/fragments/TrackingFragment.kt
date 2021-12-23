@@ -41,6 +41,19 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
         }
     }
 
+    private
+
+    // This method connects all the polylines in pathPoints
+    private fun addAllPolylines(){
+        for(polyline in pathPoints){
+            val polylinesOptions = PolylineOptions()
+                .color(POLYLINE_COLOR)
+                .width(POLYLINE_WIDTH)
+                .addAll(polyline)
+            map?.addPolyline(polylinesOptions)
+        }
+    }
+
     // Joining the Second last Coordinates with the last location Coordinates
     // This function will only join the last and second last coordinates
     // but won't join all the polylines, when we rotate the device
