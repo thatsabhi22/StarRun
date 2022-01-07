@@ -82,6 +82,7 @@ class TrackingService : LifecycleService() {
         fusedLocationProviderClient = FusedLocationProviderClient(this)
         isTracking.observe(this, Observer {
             updateLocationTracking(it)
+            updateNotificationTrackingState(it)
         })
     }
 
@@ -155,7 +156,7 @@ class TrackingService : LifecycleService() {
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-         curNotificationBuilder.javaClass.getDeclaredField("mAction").apply {
+         curNotificationBuilder.javaClass.getDeclaredField("mActions").apply {
              isAccessible = true
              set(curNotificationBuilder, ArrayList<NotificationCompat.Action>())
              curNotificationBuilder = baseNotificationBuilder
@@ -236,6 +237,12 @@ class TrackingService : LifecycleService() {
         }
 
         startForeground(NOTIFICATION_ID, baseNotificationBuilder.build())
+
+        timeRunInSeconds.observe(this, Observer {
+            val notification = curNotificationBuilder
+                .setContentText(TrackingUtility.getFormattedStopWatchTime(it * 1000))
+            notificationManager.notify(NOTIFICATION_ID, notification.build())
+        })
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
