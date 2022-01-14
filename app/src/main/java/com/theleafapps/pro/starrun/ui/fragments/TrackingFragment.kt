@@ -11,6 +11,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.PolylineOptions
 import com.theleafapps.pro.starrun.R
+import com.theleafapps.pro.starrun.db.Run
 import com.theleafapps.pro.starrun.other.Constants.ACTION_PAUSE_SERVICE
 import com.theleafapps.pro.starrun.other.Constants.ACTION_START_OR_RESUME_SERVICE
 import com.theleafapps.pro.starrun.other.Constants.MAP_ZOOM
@@ -23,6 +24,8 @@ import com.theleafapps.pro.starrun.ui.viewmodels.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_tracking.*
 import timber.log.Timber
+import java.util.Calendar
+import kotlin.math.round
 
 @AndroidEntryPoint
 class TrackingFragment : Fragment(R.layout.fragment_tracking) {
@@ -35,6 +38,8 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
     private var map: GoogleMap? = null
 
     private var curTimeInMillis = 0L
+
+    private var weight = 80f
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -120,7 +125,15 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
 
     private fun endRunAndSaveToDb() {
         map?.snapshot { bmp ->
+            var distanceInMeters = 0
+            for(polyline in pathPoints){
+                distanceInMeters += TrackingUtility.calculatePolylineLength(polyline).toInt()
+            }
 
+            val avgSpeed = round((distanceInMeters / 1000f) / (curTimeInMillis / 1000f / 60 / 60) * 10) / 10f
+            val dateTimeStamp = Calendar.getInstance().timeInMillis
+            val caloriesBurned = ((distanceInMeters / 1000f) * weight).toInt()
+            val run = Run(bmp,dateTimeStamp,avgSpeed,distanceInMeters, curTimeInMillis, caloriesBurned)
         }
     }
 
