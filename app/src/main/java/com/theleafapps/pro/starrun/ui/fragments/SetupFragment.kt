@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.theleafapps.pro.starrun.R
@@ -21,8 +22,22 @@ class SetupFragment : Fragment(R.layout.fragment_setup) {
     @Inject
     lateinit var sharedPreferences: SharedPreferences
 
+    @set:Inject
+    var isFirstAppOpen = true
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        if(!isFirstAppOpen){
+            val navOptions = NavOptions.Builder()
+                .setPopUpTo(R.id.setupFragment,true)
+                .build()
+            findNavController().navigate(
+                R.id.action_setupFragment_to_runFragment,
+                savedInstanceState,
+                navOptions
+            )
+        }
 
         tvContinue.setOnClickListener{
             val success = writePersonalDataToSharedPref()
