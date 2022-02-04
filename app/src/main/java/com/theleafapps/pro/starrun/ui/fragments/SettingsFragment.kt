@@ -51,13 +51,14 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
             return false
         }
 
-        sharefPref.edit()
+        sharedPref.edit()
             .putString(KEY_NAME,nameText)
             .putFloat(KEY_WEIGHT,weightText.toFloat())
             .apply()
 
         val toolbarText = "Let's go $nameText"
         requireActivity().tvToolbarTitle.text = toolbarText
+        return true
     }
 
 }
