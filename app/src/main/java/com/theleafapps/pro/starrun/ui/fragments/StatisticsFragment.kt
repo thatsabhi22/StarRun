@@ -3,10 +3,14 @@ package com.theleafapps.pro.starrun.ui.fragments
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.data.BarData
+import com.github.mikephil.charting.data.BarDataSet
+import com.github.mikephil.charting.data.BarEntry
 import com.theleafapps.pro.starrun.R
 import com.theleafapps.pro.starrun.other.TrackingUtility
 import com.theleafapps.pro.starrun.ui.viewmodels.StatisticsViewModel
@@ -75,6 +79,20 @@ class StatisticsFragment : Fragment(R.layout.fragment_statistics) {
             it?.let {
                 val totalCalories = "${it}kcal"
                 tvTotalCalories.text = totalCalories
+            }
+        })
+
+        viewModel.runsSortedByDate.observe(viewLifecycleOwner, Observer{
+            it?.let{
+                val allAvgSpeeds = it.indices.map{
+                    i -> BarEntry(i.toFloat(),it[i].avgSpeedInKMH)
+                }
+                val barDataSet = BarDataSet(allAvgSpeeds, "Avg Speed Over Time").apply {
+                    valueTextColor = Color.WHITE
+                    color = ContextCompat.getColor(requireContext(), R.color.colorAccent)
+                }
+                barChart.data = BarData(barDataSet)
+                barChart.invalidate()
             }
         })
     }
