@@ -12,6 +12,7 @@ import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.theleafapps.pro.starrun.R
+import com.theleafapps.pro.starrun.other.CustomMarkerView
 import com.theleafapps.pro.starrun.other.TrackingUtility
 import com.theleafapps.pro.starrun.ui.viewmodels.StatisticsViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -26,6 +27,7 @@ class StatisticsFragment : Fragment(R.layout.fragment_statistics) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         subscribeToObservers()
+        setupBarChart()
     }
 
     private fun setupBarChart(){
@@ -92,6 +94,7 @@ class StatisticsFragment : Fragment(R.layout.fragment_statistics) {
                     color = ContextCompat.getColor(requireContext(), R.color.colorAccent)
                 }
                 barChart.data = BarData(barDataSet)
+                barChart.marker = CustomMarkerView(it.reversed(), requireContext(), R.layout.marker_view)
                 barChart.invalidate()
             }
         })
