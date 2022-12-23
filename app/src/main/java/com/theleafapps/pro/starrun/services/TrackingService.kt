@@ -53,13 +53,15 @@ class TrackingService : LifecycleService() {
     private val timeRunInSeconds = MutableLiveData<Long>()
 
     companion object {
-        private val timeRunInMillis = MutableLiveData<Long>()
+        val timeRunInMillis = MutableLiveData<Long>()
         val isTracking = MutableLiveData<Boolean>()
         val pathPoints = MutableLiveData<PolyLines>()
     }
 
     // Adding Empty list to Livedata initially
     private fun postInitialValues(){
+        timeRunInSeconds.postValue(0L)
+        timeRunInMillis.postValue(0L)
         isTracking.postValue(false)
         pathPoints.postValue(mutableListOf())
     }

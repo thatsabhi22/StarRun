@@ -15,6 +15,7 @@ import com.theleafapps.pro.starrun.other.Constants.ACTION_START_OR_RESUME_SERVIC
 import com.theleafapps.pro.starrun.other.Constants.MAP_ZOOM
 import com.theleafapps.pro.starrun.other.Constants.POLYLINE_COLOR
 import com.theleafapps.pro.starrun.other.Constants.POLYLINE_WIDTH
+import com.theleafapps.pro.starrun.other.TrackingUtility
 import com.theleafapps.pro.starrun.services.PolyLine
 import com.theleafapps.pro.starrun.services.TrackingService
 import com.theleafapps.pro.starrun.ui.viewmodels.MainViewModel
@@ -31,6 +32,8 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
     private var pathPoints = mutableListOf<PolyLine>()
 
     private var map: GoogleMap? = null
+
+    private var curTimeInMillis = 0L
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -56,6 +59,12 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
             pathPoints = it
             addLatestPolyline()
             moveCameraToUser()
+        })
+
+        TrackingService.timeRunInMillis.observe(viewLifecycleOwner, Observer {
+            curTimeInMillis = it
+            val formattedTime = TrackingUtility.getFormattedStopWatchTime(curTimeInMillis, true)
+            tvTimer.text = formattedTime
         })
     }
 
